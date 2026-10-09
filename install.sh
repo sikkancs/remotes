@@ -337,7 +337,7 @@ setup_aliases() {
             # One alias file, sourced from the startup file.
             cat > "$ALIAS_FILE" <<'EOF'
 # Managed by the Remotes installer; re-running the installer rewrites this file.
-alias remotes="$HOME/.config/remotes/remotes.sh"
+alias rms="$HOME/.config/remotes/remotes.sh"
 alias sshs="$HOME/.config/sshs/sshs.sh"
 alias rdps="$HOME/.config/rdps/rdps.sh"
 alias webs="$HOME/.config/webs/webs.sh"
@@ -350,7 +350,7 @@ EOF
             mkdir -p "$(dirname "$FISH_CONF")" || die "cannot create $(dirname "$FISH_CONF")"
             cat > "$FISH_CONF" <<'EOF'
 # Managed by the Remotes installer; re-running the installer rewrites this file.
-alias remotes "$HOME/.config/remotes/remotes.sh"
+alias rms "$HOME/.config/remotes/remotes.sh"
 alias sshs "$HOME/.config/sshs/sshs.sh"
 alias rdps "$HOME/.config/rdps/rdps.sh"
 alias webs "$HOME/.config/webs/webs.sh"
@@ -361,7 +361,7 @@ EOF
         *)
             warn "unknown shell '$shell_name'; no aliases were created."
             info "Add these lines to your shell startup file manually:"
-            info '  alias remotes="$HOME/.config/remotes/remotes.sh"'
+            info '  alias rms="$HOME/.config/remotes/remotes.sh"'
             info '  alias sshs="$HOME/.config/sshs/sshs.sh"'
             info '  alias rdps="$HOME/.config/rdps/rdps.sh"'
             info '  alias webs="$HOME/.config/webs/webs.sh"'
