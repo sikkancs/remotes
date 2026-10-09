@@ -1,0 +1,99 @@
+# =============================================================================
+# WEB records - reference sample
+# =============================================================================
+# Real files live here:
+#   ~/.remotes/hosts/<group>/<anything>-web.conf     (any number of files)
+#   ~/.remotes/hosts/<group>-web.conf                (group = name before -web.conf)
+#   ~/.remotes/hosts/web.conf                        (group "general")
+#
+# Keys inside a Host block:
+#   Host         one or more aliases (every alias gets its own row)
+#   URL          full address; https:// is added when the scheme is missing
+#   HostName     alternative to URL, combined with Scheme and Port
+#   Port         optional, used with HostName
+#   Scheme       optional, https (default) or http, used with HostName
+#   Browser      optional, default is the system browser (or $REMOTES_BROWSER)
+#                  macOS:   chrome, edge, firefox, safari, brave, vivaldi, arc,
+#                           opera, or any application name ("Google Chrome Canary")
+#                  Windows: chrome, edge, firefox, brave, vivaldi, opera,
+#                           or an executable name / full path
+#   Profile      optional browser profile
+#                  Chrome, Edge, Brave, Vivaldi: the profile DIRECTORY name,
+#                    for example Default or "Profile 1" (last part of the
+#                    "Profile Path" shown at chrome://version)
+#                  Firefox: the profile name (see about:profiles)
+#                Ignored for Safari and the system default browser.
+#   BrowserArgs  optional extra browser arguments, separated by spaces
+#   # Tags       searchable words, a comment line INSIDE the block
+#
+# Rules:
+#   - Put comments on their own line, not after a value.
+#   - URL wins over HostName. A block with neither is skipped.
+#   - Wildcard aliases (Host *) are ignored.
+#   - Duplicate alias: the first definition wins.
+#   - Self-signed certificates: the browser warning is not bypassed.
+#
+# The Info column shows the browser.
+# =============================================================================
+
+
+# 1) Minimal: full URL, system default browser.
+Host home-router
+    URL https://192.168.1.1/
+    # Tags home router
+
+
+# 2) Custom port.
+Host home-switch
+    URL https://192.168.1.2:8443/
+    # Tags home switch
+
+
+# 3) Plain http must be written out; a URL without a scheme becomes https.
+Host home-printer
+    URL http://192.168.1.50/
+    # Tags home printer
+
+
+# 4) Address built from HostName + Port + Scheme (scheme defaults to https).
+Host customer-nas
+    HostName 10.10.0.20
+    Port 5001
+    # Tags customer nas storage
+
+
+# 5) A specific browser.
+Host customer-firewall
+    URL https://203.0.113.1:4433/
+    Browser chrome
+    # Tags customer firewall
+
+
+# 6) A browser profile keeps cookies and sessions apart per customer.
+Host customer-hypervisor
+    URL https://10.10.0.5:8006/
+    Browser chrome
+    Profile "Profile 1"
+    # Tags customer hypervisor proxmox
+
+
+# 7) Firefox with a named profile.
+Host lab-gui
+    URL https://192.168.50.5/
+    Browser firefox
+    Profile lab
+    # Tags lab
+
+
+# 8) Extra browser arguments (space separated words).
+Host customer-monitoring
+    URL https://10.10.0.60:3000/
+    Browser edge
+    BrowserArgs --new-window
+    # Tags customer monitoring grafana
+
+
+# 9) Several aliases for one address (both are listed).
+Host customer-vcenter vcenter
+    URL https://10.10.0.7/
+    # Tags customer vmware

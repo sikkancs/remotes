@@ -1,0 +1,105 @@
+# =============================================================================
+# SSH records - reference sample
+# =============================================================================
+# Real files live here:
+#   ~/.remotes/hosts/<group>/<anything>-ssh.conf     (any number of files)
+#   ~/.remotes/hosts/<group>-ssh.conf                (group = name before -ssh.conf)
+#   ~/.remotes/hosts/ssh.conf                        (group "general")
+#
+# Syntax: standard OpenSSH ssh_config. Everything ssh understands works here.
+#
+# What Remotes reads for the list:
+#   Host       one or more aliases (every alias gets its own row)
+#   HostName   shown in the "Host (Target)" column
+#   User       shown in the "Info" column
+#   # Tags     searchable words, a comment line INSIDE the block (after Host)
+#
+# Rules:
+#   - Put comments on their own line. ssh does not support trailing comments.
+#   - Wildcard hosts (Host *, Host 10.0.*) and Match blocks are not listed.
+#     Keep global defaults in ~/.ssh/config.
+#   - Duplicate alias: the first definition wins. Files are read in path order,
+#     the main ~/.ssh/config last.
+#   - Aliases are unique per type: the same alias may exist as ssh, rdp and web.
+#
+# Menu keys for SSH rows:
+#   Enter   connect              Ctrl+V   verbose (ssh -vvvv)
+#   Ctrl+R  remove the host key from known_hosts (after a reinstall)
+# =============================================================================
+
+
+# 1) Minimal: alias and address.
+Host minimal-host
+    HostName 192.168.1.10
+
+
+# 2) Typical server: user, port, key, tags.
+Host customer-web01
+    HostName 10.10.0.21
+    User deploy
+    Port 2222
+    IdentityFile ~/.ssh/id_ed25519
+    # Tags customer web nginx prod
+
+# 3) Several aliases for one host (both are listed).
+Host customer-db01 db01
+    HostName 10.10.0.30
+    User postgres
+    # Tags customer database postgres
+
+
+# 4) No HostName: the alias itself is resolved by DNS.
+Host server01.example.com
+    User admin
+    # Tags example dns
+
+
+# 5) Jump host: reach an internal machine through a bastion.
+Host customer-bastion
+    HostName 203.0.113.10
+    User jump
+    IdentityFile ~/.ssh/id_ed25519
+    # Tags customer bastion
+
+Host customer-internal
+    HostName 10.10.0.50
+    User admin
+    ProxyJump customer-bastion
+    # Tags customer internal
+
+
+# 6) Old network gear (switch, router) that only offers legacy algorithms.
+Host old-switch
+    HostName 192.168.1.2
+    User admin
+    KexAlgorithms +diffie-hellman-group14-sha1
+    HostKeyAlgorithms +ssh-rsa
+    # Tags switch legacy
+
+
+# 7) Lab machine that gets reinstalled often: accept new host keys silently.
+Host lab-vm
+    HostName 192.168.50.20
+    User root
+    StrictHostKeyChecking accept-new
+    # Tags lab vm
+
+
+# 8) Reach a web GUI that is only visible from the remote side.
+#    Connect, then open https://localhost:8443/ in a browser.
+Host customer-firewall-tunnel
+    HostName 10.10.0.1
+    User admin
+    LocalForward 8443 10.10.0.1:443
+    # Tags customer firewall tunnel
+
+# 9) If 1Password SSH agent present
+Host vm-loadbalancer-nginx
+	HostName 192.168.2.200
+	Port 22
+	User root
+	PreferredAuthentications publickey
+	IdentityFile ~/.ssh/1Password/SHA256_DlcQgEfFKA5Tz0hn4q5trdjns3pDAUV4.pub
+	IdentityAgent "~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
+	IdentitiesOnly yes
+	#Tags loadbalancer nginx prod
