@@ -1,0 +1,118 @@
+# =============================================================================
+# RDP records - reference sample
+#
+# File defaults: a "Host *" block holds defaults for ALL records of the same
+# file, and for no other file. A record's own value wins over the default,
+# RdpOption lines add up (defaults first, then the record), tags are combined.
+# The block may stand anywhere in the file, usually at the top (see 8).
+# Use one file per domain to give each domain its own user name.
+# =============================================================================
+# Real files live here:
+#   ~/.config/remotes/hosts/<group>/<anything>-rdp.conf     (any number of files)
+#   ~/.config/remotes/hosts/<group>-rdp.conf                (group = name before -rdp.conf)
+#   ~/.config/remotes/hosts/rdp.conf                        (group "general")
+#
+# Keys inside a Host block:
+#   Host        one or more aliases (every alias gets its own row)
+#   HostName    REQUIRED: IP address or FQDN (blocks without it are skipped)
+#   User        optional; DOMAIN\user and user@domain are both fine
+#   Mode        User (default) or Admin (administrative / console session)
+#   Screen      Window | Full | WIDTHxHEIGHT, for example 1600x900
+#               Default: Window on macOS, Full on Windows (mstsc windows cannot be
+#               resized reliably, so Windows starts in full screen).
+#   RdpOption   optional raw .rdp line "name:type:value" (type is s, i or b).
+#               Repeatable. Overrides lines generated from the keys above.
+#   # Tags      searchable words, a comment line INSIDE the block
+#
+# Rules:
+#   - Put comments on their own line, not after a value.
+#   - The first occurrence of a key wins (RdpOption excepted: all are kept).
+#   - Wildcard aliases (Host *) are ignored.
+#   - Duplicate alias: the first definition wins.
+#   - Which RdpOption lines take effect depends on the client (Windows mstsc,
+#     Windows App on macOS). The full list of properties:
+#     https://learn.microsoft.com/en-us/azure/virtual-desktop/rdp-properties
+#
+# The Info column shows USER or ADMIN, taken from Mode.
+# =============================================================================
+
+
+# 1) Minimal: only the address is required.
+Host minimal-rdp
+    HostName 10.0.0.10
+
+
+# 2) Domain account.
+Host customer-dc01
+    HostName 10.10.0.10
+    User CONTOSO\administrator
+    # Tags customer dc windows server2022
+
+
+# 3) Administrative (console) session.
+Host customer-hyperv01
+    HostName 10.10.0.11
+    User CONTOSO\administrator
+    Mode Admin
+    # Tags customer hyperv windows
+
+
+# 4) Full screen.
+Host customer-ts01
+    HostName 10.10.0.20
+    User CONTOSO\jsmith
+    Screen Full
+    # Tags customer terminalserver
+
+
+# 5) Fixed window size.
+Host customer-app01
+    HostName 10.10.0.25
+    Screen 1600x900
+    # Tags customer app
+
+
+# 6) Raw .rdp properties: clipboard, drives, printers, audio.
+#    The commented lines show other common values.
+Host customer-mgmt01
+    HostName 10.10.0.56
+    User administrator
+    Mode User
+    Screen Full
+    RdpOption redirectclipboard:i:1
+    RdpOption redirectprinters:i:0
+    RdpOption audiomode:i:2
+    # RdpOption drivestoredirect:s:*
+    # RdpOption audiocapturemode:i:1
+    # RdpOption autoreconnection enabled:i:1
+    # Tags customer management windows
+
+
+# 7) Several aliases for one host (both are listed).
+Host customer-file01 fs01
+    HostName 10.10.0.30
+    User CONTOSO\administrator
+    # Tags customer fileserver windows
+
+
+# 8) File defaults. This example is commented out so that it does not change
+#    the records above; remove the leading "# " of the lines to use it in your
+#    own file. It then applies to the records of THAT file only.
+#
+# Host *
+#     User CONTOSO\jsmith
+#     Mode User
+#     Screen Full
+#     RdpOption redirectclipboard:i:1
+#     # Tags contoso
+#
+# # Gets the defaults: user CONTOSO\jsmith, full screen, clipboard, tag contoso.
+# Host contoso-dc01
+#     HostName 10.20.0.10
+#     # Tags dc
+#
+# # Overrides the default user and the clipboard setting.
+# Host contoso-app01
+#     HostName 10.20.0.11
+#     User CONTOSO\appadmin
+#     RdpOption redirectclipboard:i:0
